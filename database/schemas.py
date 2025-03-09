@@ -35,9 +35,10 @@ class UserResponse(UserBase):
     last_name: Optional[str] = None
    
     
+class AudioProcessingResponse(BaseModel):
+    transcription: str
+    amount: float    
     
-    
-    
-    
+
     
     

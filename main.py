@@ -12,10 +12,8 @@ from database.models import User
 
 
 
-from api import users
+from api import users, process_voice
 
-import json
-from uuid import UUID
 
 app = FastAPI()
 
@@ -35,3 +33,4 @@ app.add_middleware(
 # app.mount("/static", StaticFiles(directory="static/"), name="static")
 
 app.include_router(users.router, prefix="/api/users", tags=["users"])
+app.include_router(process_voice.router, prefix="/api/process-audio", tags=["audio-process"])
