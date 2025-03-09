@@ -6,7 +6,7 @@ import tempfile
 import spacy
 from langdetect import detect
 
-from app.categories import CATEGORIES 
+from categories import CATEGORIES 
 
 
 nlp = spacy.load("xx_ent_wiki_sm")
@@ -35,21 +35,28 @@ def detect_language(text: str) -> str:
     return detect(text)
 
 def extract_spending_info(text):
-    language = detect_language(text)
+   
+    language = detect_language(text=text)
     print(f"COMING TEXT TO HERE: {text}")
+    
+   
     price_pattern = r"([€$₹¥])?(\d{1,3}(?:,\d{3})*(?:\.\d{2})?)"
     prices = re.findall(price_pattern, text)
-    print(f"FOUND PRICES: {prices}")
+
     
     spending_details = []
-    doc = nlp(text)
+    doc = nlp(text)  
+ 
+    price_positions = [m.start() for m in re.finditer(price_pattern, text)]
     
-    for price in prices:
+    for i, price in enumerate(prices):
         currency_symbol, amount_str = price
         if not amount_str:
             continue
 
-        amount = float(amount_str.replace(',', ''))
+        amount = float(amount_str.replace(',', ''))  
+        
+       
         if currency_symbol == '$':
             currency = 'USD'
         elif currency_symbol == '€':
@@ -61,13 +68,14 @@ def extract_spending_info(text):
         else:
             currency = 'Unknown'
         
-        start_index = text.find(amount_str)
-        text_after_price = text[start_index + len(amount_str):]
+
+        start_index = price_positions[i]
+        end_index = price_positions[i + 1] if i + 1 < len(price_positions) else len(text)
+        text_after_price = text[start_index:end_index]
         
         item = None
         category_label = None
         
-
         for category, language_dict in CATEGORIES.items():
             for lang, keywords in language_dict.items():
                 if lang == language:
@@ -76,7 +84,7 @@ def extract_spending_info(text):
                             item = keyword
                             category_label = category
                             break
-                if item:
+                if item: 
                     break
             if item:
                 break
@@ -87,7 +95,6 @@ def extract_spending_info(text):
                     item = token.text
                     category_label = 'general'
                     break
-        
         if item:
             spending_details.append({
                 'item': item,

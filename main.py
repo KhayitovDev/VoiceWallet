@@ -24,7 +24,8 @@ app.add_middleware(
         "http://localhost:8000",
         "https://12d6-94-158-60-201.ngrok-free.app",
         "http://localhost:5173", 
-        "http://localhost:5174"
+        "http://localhost:5174",
+        "https://zp1v56uxy8rdx5ypatb0ockcb9tr6a-oci3--5173--495c5120.local-credentialless.webcontainer-api.io/"
     ],
     allow_credentials=True,
     allow_methods=["*"],

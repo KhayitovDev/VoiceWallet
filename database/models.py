@@ -43,8 +43,9 @@ class Expenses(Base):
     __tablename__ = "expenses"
     id = Column(UUID, primary_key=True, default=uuid4)
     user_id = Column(UUID, ForeignKey("users.id"), nullable=False)
-    expense_type = Column(String, nullable=True)
     voice_content = Column(Text, nullable=True)
-    amount = Column(String, nullable=True)
+    expense_category = Column(String, nullable=True)
+    expense_name = Column(String, nullable=True)
+    expense_amount = Column(String, nullable=True)
     created_at = Column(DateTime, default=datetime.now())
     

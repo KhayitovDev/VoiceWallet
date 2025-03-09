@@ -45,6 +45,6 @@ def get_users(db: Session=Depends(get_db)):
 def get_user_id(username: str, db: Session = Depends(get_db)):
     user = db.query(User).filter_by(username=username).first()
     if user:
-        return {"user_id": str(user.id)}
+        return {"user_id": user.id}
     else:
         return {"error": "User not found"}, 404
