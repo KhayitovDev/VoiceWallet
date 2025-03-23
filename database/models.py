@@ -17,6 +17,7 @@ class User(Base):
     first_name = Column(String, nullable=True)
     last_name = Column(String, nullable=True)
     username = Column(String, unique=True)
+    currency = Column(String, default="UZS")
     hashed_password = Column(String)
     
     @validates('first_name', 'last_name')
@@ -44,6 +45,7 @@ class Expenses(Base):
     id = Column(UUID, primary_key=True, default=uuid4)
     user_id = Column(UUID, ForeignKey("users.id"), nullable=False)
     voice_content = Column(Text, nullable=True)
+    ocr_content = Column(Text, nullable=True)
     expense_category = Column(String, nullable=True)
     expense_name = Column(String, nullable=True)
     expense_amount = Column(String, nullable=True)

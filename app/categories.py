@@ -1,6 +1,6 @@
 CATEGORIES = {
     'food': {
-        'en': ['coffee', 'croissant', 'bananas', 'apples', 'salad', 'pasta', 'burger', 'pizza', 'sandwich', 'cake', 'sushi', 'juice', 'tea', 'sandwiches', 'fruits', 'steak', 'pancakes', 'omelette', 'yogurt', 'cheese', 'cookies', 'pasta salad', 'ice cream', 'smoothie'],
+        'en': ['coffee', 'croissant', 'bananas', 'apples', 'salad', 'pasta', 'burger', 'pizza', 'sandwich', 'cake', 'sushi', 'juice', 'tea', 'sandwiches', 'fruits', 'steak', 'pancakes', 'omelette', 'yogurt', 'cheese', 'cookies', 'pasta salad', 'ice cream', 'smoothie', 'water', 'sweets'],
         'ru': ['кофе', 'круассан', 'бананы', 'яблоки', 'салат', 'паста', 'бургер', 'пицца', 'сэндвич', 'торт', 'суши', 'сок', 'чай', 'сэндвичи', 'фрукты', 'стейк', 'блинчики', 'омлет', 'йогурт', 'сыр', 'печенье', 'паста-салат', 'мороженое', 'смуси'],
         'fr': ['café', 'croissant', 'bananes', 'pommes', 'salade', 'pâtes', 'burger', 'pizza', 'sandwich', 'gâteau', 'sushi', 'jus', 'thé', 'sandwichs', 'fruits', 'steak', 'crêpes', 'omelette', 'yaourt', 'fromage', 'biscuits', 'salade de pâtes', 'glace', 'smoothie'],
         'it': ['caffè', 'cornetto', 'banane', 'mele', 'insalata', 'pasta', 'hamburger', 'pizza', 'panino', 'torta', 'sushi', 'succo', 'tè', 'panini', 'frutta', 'bistecca', 'pancake', 'omelette', 'yogurt', 'formaggio', 'biscotti', 'insalata di pasta', 'gelato', 'frullato'],

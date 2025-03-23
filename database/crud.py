@@ -25,9 +25,8 @@ def create_user(db: Session, user: UserCreate):
 def get_by_username(db: Session, username: str):
     return db.query(User).filter(User.username == username).first()
 
-def add_expense(user_id: uuid.UUID,  original_text: str,  expenses: List[Dict[str, Any]], db: Session = Depends(get_db)):
+def add_expense_by_voice(user_id: uuid.UUID,  original_text: str,  expenses: List[Dict[str, Any]], db: Session = Depends(get_db)):
     
-    print(len(expenses))
     for expense in expenses:
         item = expense.get('item')
         print(f"ITEM: {item}")
@@ -39,6 +38,7 @@ def add_expense(user_id: uuid.UUID,  original_text: str,  expenses: List[Dict[st
         new_expense = Expenses(
             user_id = user_id,
             voice_content = original_text,
+            ocr_content = None,
             expense_category = category,
             expense_name = item,
             expense_amount = amount
@@ -47,3 +47,31 @@ def add_expense(user_id: uuid.UUID,  original_text: str,  expenses: List[Dict[st
         db.add(new_expense)
         db.commit()
         db.refresh(new_expense)
+        
+
+def add_expense_by_image(user_id: uuid.UUID,  extracted_content: List[Dict[str, Any]],  expenses: List[Dict[str, Any]], db: Session = Depends(get_db)):
+    
+    for expense in expenses:
+        item = expense.get('item')
+        print(f"ITEM: {item}")
+        amount = expense.get('amount')
+        print(f"AMOUNT: {amount}")
+        category = expense.get('category')
+        print(f"CATEGORY: {category}")
+        if item and category and amount:
+            new_expense = Expenses(
+                user_id = user_id,
+                voice_content = None,
+                ocr_content = extracted_content,
+                expense_category = category,
+                expense_name = item,
+                expense_amount = amount
+            )
+            
+            db.add(new_expense)
+            db.commit()
+            db.refresh(new_expense)
+        
+def get_expenses_list(user_id: uuid.UUID, db: Session):
+    return db.query(Expenses).filter(Expenses.user_id == user_id).all()
+    

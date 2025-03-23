@@ -27,6 +27,7 @@ class UserCreate(UserBase):
     hashed_password: str
     first_name: Optional[str] = None
     last_name: Optional[str] = None
+    currency: Optional[str] = None
       
 class UserResponse(UserBase):
     id: UUID

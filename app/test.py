@@ -1,84 +1,52 @@
-import spacy
-import re
 
-# Assuming the CATEGORIES dictionary is correctly defined as per your request.
-from categories import CATEGORIES
-from utils import detect_language
-nlp = spacy.load('xx_ent_wiki_sm')
+import json
+from google import genai
+from decouple import config
 
-def extract_spending_info(text):
+
+API_KEY = config("API_KEY")
+client = genai.Client(api_key=API_KEY)
+
+async def generate_content_async(text: str):
    
-    language = detect_language(text=text)
-    print(f"COMING TEXT TO HERE: {text}")
+    content = f"""
+    Extract the following information from the given text and return it as a JSON array:
+
+    1. **Item**: The specific product or goods mentioned (e.g., Jacket, charger, bananas).
+    2. **Category**: The general group or classification the item belongs to (e.g., clothing, electronics, food).
+    3. **Amount**: The numerical value associated with each item or the total cost (e.g., 55, 15, 5).
+    4. **Currency**: The type of currency used (e.g., USD, EUR, INR).
+
+    Each item should be returned as an object in the JSON array with the structure:
+
+    [
+        {{
+            "item": "<item_name>",
+            "category": "<category>",
+            "amount": "<amount>",
+            "currency": "<currency>"
+        }},
+        
+    ]
+
+    {text}
+    """
+
+    response = client.models.generate_content(
+        model="gemini-2.0-flash",
+        contents=content
+    )
+
+    cleaned_response = response.text.strip()  
+    cleaned_response = cleaned_response.strip('```json').strip('```')  
+
+    try:
+        json_response = json.loads(cleaned_response)
+        return json_response
+    except json.JSONDecodeError:
+        print("The response is not in valid JSON format:", cleaned_response)
     
-   
-    price_pattern = r"([€$₹¥])?(\d{1,3}(?:,\d{3})*(?:\.\d{2})?)"
-    prices = re.findall(price_pattern, text)
-
     
-    spending_details = []
-    doc = nlp(text)  
- 
-    price_positions = [m.start() for m in re.finditer(price_pattern, text)]
-    
-    for i, price in enumerate(prices):
-        currency_symbol, amount_str = price
-        if not amount_str:
-            continue
 
-        amount = float(amount_str.replace(',', ''))  
-        
-       
-        if currency_symbol == '$':
-            currency = 'USD'
-        elif currency_symbol == '€':
-            currency = 'EUR'
-        elif currency_symbol == '₹':
-            currency = 'INR'
-        elif currency_symbol == '¥':
-            currency = 'JPY'
-        else:
-            currency = 'Unknown'
-        
 
-        start_index = price_positions[i]
-        end_index = price_positions[i + 1] if i + 1 < len(price_positions) else len(text)
-        text_after_price = text[start_index:end_index]
-        
-        item = None
-        category_label = None
-        
-        for category, language_dict in CATEGORIES.items():
-            for lang, keywords in language_dict.items():
-                if lang == language:
-                    for keyword in keywords:
-                        if keyword.lower() in text_after_price.lower():
-                            item = keyword
-                            category_label = category
-                            break
-                if item: 
-                    break
-            if item:
-                break
-        
-        if not item:
-            for token in doc[start_index:]:
-                if token.pos_ == 'NOUN' and token.text.lower() not in [item.lower() for item in sum([list(cat.values()) for cat in CATEGORIES.values()], [])]:
-                    item = token.text
-                    category_label = 'general'
-                    break
-        if item:
-            spending_details.append({
-                'item': item,
-                'amount': amount,
-                'currency': currency,
-                'category': category_label
-            })
-    
-    return spending_details
-
-# Example text to test
-text = "13 $ per un caffè, 25 $ per una giacca e 10 $ per il caricabatteria."
-
-result = extract_spending_info(text)
-print(result)
+  
