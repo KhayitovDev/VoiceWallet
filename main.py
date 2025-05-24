@@ -27,7 +27,8 @@ app.add_middleware(
         "http://localhost:5173", 
         "http://localhost:5174",
         "https://vermillion-kangaroo-33e132.netlify.app",
-        "http://172.28.112.1:8001"
+        "http://172.28.112.1:8001",
+        "http://10.0.2.2:8000"
     ],
     allow_credentials=True,
     allow_methods=["*"],

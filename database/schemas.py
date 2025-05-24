@@ -1,4 +1,4 @@
-from typing import List, Optional
+from typing import Any, List, Optional
 from pydantic import BaseModel, field_validator
 
 from sqlalchemy import Text
@@ -19,21 +19,22 @@ class TokenData(BaseModel):
 
 class UserBase(BaseModel):
     username: str
-    first_name: Optional[str] = None
-    last_name: Optional[str] = None
+    # first_name: Optional[str] = None
+    # last_name: Optional[str] = None
     
 class UserCreate(UserBase):
     username: str
     hashed_password: str
-    first_name: Optional[str] = None
-    last_name: Optional[str] = None
-    currency: Optional[str] = None
+    email: str
+    # first_name: Optional[str] = None
+    # last_name: Optional[str] = None
+    # currency: Optional[str] = None
       
 class UserResponse(UserBase):
     id: UUID
     username: str
-    first_name: Optional[str] = None
-    last_name: Optional[str] = None
+    # first_name: Optional[str] = None
+    # last_name: Optional[str] = None
    
     
 class AudioProcessingResponse(BaseModel):
@@ -41,5 +42,13 @@ class AudioProcessingResponse(BaseModel):
     amount: float    
     
 
-    
+class ExpenseUpdate(BaseModel):
+    amount: Optional[float] = None
+    description: Optional[str] = None
+    category: Optional[str] = None
+    updated_at: Optional[Any] = None 
+
+    class Config:
+        from_attributes = True  
+
     

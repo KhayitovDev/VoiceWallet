@@ -14,18 +14,17 @@ class User(Base):
     __tablename__ = "users"
     
     id = Column(UUID, primary_key=True, default=uuid4)
-    first_name = Column(String, nullable=True)
-    last_name = Column(String, nullable=True)
     username = Column(String, unique=True)
-    currency = Column(String, default="UZS")
+    email = Column(String, nullable=False, default="testemail@example.com")  # Provide a default email
     hashed_password = Column(String)
+
     
-    @validates('first_name', 'last_name')
-    def set_username(self, key, value):
-        """Automatically set the username as first_name-last_name"""
-        if self.first_name and self.last_name:
-            self.username = f"{self.first_name.lower()}-{self.last_name.lower()}"
-        return value
+    # @validates('first_name', 'last_name')
+    # def set_username(self, key, value):
+    #     """Automatically set the username as first_name-last_name"""
+    #     if self.first_name and self.last_name:
+    #         self.username = f"{self.first_name.lower()}-{self.last_name.lower()}"
+    #     return value
     
     def _generate_unique_username(self, base_username: str):
         """Generate a unique username by checking if it exists in the database."""
@@ -50,4 +49,5 @@ class Expenses(Base):
     expense_name = Column(String, nullable=True)
     expense_amount = Column(String, nullable=True)
     created_at = Column(DateTime, default=datetime.now())
+    updated_at = Column(DateTime,  default=datetime.now())
     

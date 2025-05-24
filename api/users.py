@@ -28,12 +28,15 @@ def login(form_data: schemas.UserLogin, db: Session = Depends(get_db)):
     return {"access_token": access_token, "token_type": "bearer"}
 
 
-@router.post("/register", response_model=schemas.UserResponse)
+@router.post("/register")
 def create_user(user: schemas.UserCreate, db: Session=Depends(get_db)):
     db_user = crud.get_by_username(db, user.username)
     if db_user:
         raise HTTPException(status_code=400, detail="Username already exists")
-    return crud.create_user(db, user)
+    
+    crud.create_user(db, user)
+    return {"message": "Your account has been created successfully!"}
+
 
 @router.get("/users", response_model=List[schemas.UserResponse])
 def get_users(db: Session=Depends(get_db)):

@@ -1,5 +1,6 @@
-from typing import Any, Dict, List
+from typing import Any, Dict, List, Optional
 from fastapi import Depends
+from sqlalchemy import asc, desc
 from sqlalchemy.orm import Session
 from database.bcrypt import hash_password
 from database.models import User, Expenses
@@ -12,8 +13,7 @@ def create_user(db: Session, user: UserCreate):
     
     db_user = User(
         username=user.username,
-        first_name=user.first_name,
-        last_name=user.last_name,
+        email=user.email,
         hashed_password=user_hash_password
     )
     
@@ -48,7 +48,6 @@ def add_expense_by_voice(user_id: uuid.UUID,  original_text: str,  expenses: Lis
         db.commit()
         db.refresh(new_expense)
         
-
 def add_expense_by_image(user_id: uuid.UUID,  extracted_content: List[Dict[str, Any]],  expenses: List[Dict[str, Any]], db: Session = Depends(get_db)):
     
     for expense in expenses:
@@ -72,6 +71,61 @@ def add_expense_by_image(user_id: uuid.UUID,  extracted_content: List[Dict[str, 
             db.commit()
             db.refresh(new_expense)
         
-def get_expenses_list(user_id: uuid.UUID, db: Session):
-    return db.query(Expenses).filter(Expenses.user_id == user_id).all()
+def get_expenses_list(
+    user_id: uuid.UUID,
+    db: Session,
+    category: Optional[str] = None,
+    search: Optional[str] = None,
+    sort_by: Optional[str] = 'created_at',
+    sort_order: Optional[str] = 'desc'
+):
+    query = db.query(Expenses).filter(Expenses.user_id == user_id)
+
+    if category:
+        query = query.filter(Expenses.expense_category == category)
+
+    if search:
+        query = query.filter(
+            (Expenses.voice_content.ilike(f'%{search}%')) |
+            (Expenses.ocr_content.ilike(f'%{search}%')) |
+            (Expenses.expense_name.ilike(f'%{search}%'))
+        )
+
+    if sort_order == 'asc':
+        if sort_by in ['created_at', 'expense_amount', 'expense_name']:  
+            query = query.order_by(asc(getattr(Expenses, sort_by)))
+    else:
+        if sort_by in ['created_at', 'expense_amount', 'expense_name']:  
+            query = query.order_by(desc(getattr(Expenses, sort_by)))
+
+    return query.all()
+
+def get_unique_expense_categories(db: Session):
+    categories = db.query(Expenses.expense_category).distinct().all()
+    return [category[0] for category in categories]
+
+def expense_delete(expense_id: uuid.UUID, db: Session):
+    expense = db.query(Expenses).filter(Expenses.id == expense_id).first()
     
+    if expense:
+        db.delete(expense)
+        db.commit()
+        return {"message": "Expense deleted successfully"}
+    else:
+        return {"message": "Expense not found"}
+    
+def expense_update(expense_id: uuid.UUID, updated_data: dict, db: Session):
+    expense = db.query(Expenses).filter(Expenses.id == expense_id).first()
+    
+    if expense:
+        for key, value in updated_data.items():
+            if key == "updated_at":
+                pass 
+            else:   
+                if hasattr(expense, key):
+                    setattr(expense, key, value)
+                
+        db.commit()
+        return {"message": "Expense updated successfully"}
+    else:
+        return {"message": "Expense not found"}
