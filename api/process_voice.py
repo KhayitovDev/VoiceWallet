@@ -29,7 +29,6 @@ async def process_audio(user_id: uuid.UUID, audio: UploadFile = File(...), db: S
         print(e)
         raise HTTPException(status_code=500, detail=str(e))
     
-    
 
 @router.post('/process-image')
 async def process_image(user_id: uuid.UUID, image: UploadFile = File(...), db: Session = Depends(get_db)):

@@ -1,4 +1,4 @@
-from sqlalchemy import Column, DateTime, ForeignKey, String, Text
+from sqlalchemy import Column, DateTime, ForeignKey, String, Text, Numeric
 from sqlalchemy.dialects.postgresql import UUID
 from uuid import uuid4
 from database.database import Base
@@ -47,7 +47,22 @@ class Expenses(Base):
     ocr_content = Column(Text, nullable=True)
     expense_category = Column(String, nullable=True)
     expense_name = Column(String, nullable=True)
-    expense_amount = Column(String, nullable=True)
+    expense_amount = Column(Numeric(12, 2), nullable=True)
+    insertion_type = Column(String, nullable=True)
     created_at = Column(DateTime, default=datetime.now())
     updated_at = Column(DateTime,  default=datetime.now())
+    
+
+class Category(Base):
+    
+    __tablename__ = 'category'
+    
+    id = Column(UUID, primary_key=True, default=uuid4)
+    user_id = Column(UUID, ForeignKey("users.id"), nullable=False)
+    name =  Column(String, nullable=True)
+    created_at = Column(DateTime, default=datetime.now())
+    updated_at = Column(DateTime,  default=datetime.now())
+    
+    
+
     
