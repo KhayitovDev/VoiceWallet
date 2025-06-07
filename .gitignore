@@ -169,3 +169,11 @@ cython_debug/
 
 # PyPI configuration file
 .pypirc
+
+# Environment variables
+.env
+.env.*
+
+# Docker
+.docker/
+docker-compose.override.yml
